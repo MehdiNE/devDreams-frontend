@@ -1,8 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// Font files can be colocated inside of `app`
+const myFont = localFont({
+  src: [
+    {
+      path: "./fonts/IRANSansXV.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "./fonts/IRANSansXV.woff",
+      weight: "100 900",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-custom",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="fa">
+      <body className={myFont.className}>{children}</body>
     </html>
   );
 }
