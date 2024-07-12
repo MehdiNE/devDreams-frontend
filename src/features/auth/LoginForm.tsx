@@ -11,13 +11,26 @@ function LoginForm() {
         <p className="text-sm">برای ورود فرم زیر رو پر کن</p>
       </div>
 
-      <div className="space-y-4">
-        <Input />
-        <Input />
-        <Button>ورود</Button>
+      <div className="space-y-5">
+        <Input
+          label="ایمیل یا نام کاربری"
+          placeholder="ایمیل یا نام کاربری خود را وارد کنید"
+        />
+
+        <Input label="رمز عبور" placeholder="رمز عبور خود را وارد کنید" />
+
+        <Button size="lg">ورود</Button>
       </div>
 
-      <div className="flex"></div>
+      <div className="my-6 -mr-1 flex items-center justify-center gap-3 overflow-clip">
+        <Separator />
+        <span className="text-sm font-medium">یا</span>
+        <Separator />
+      </div>
+
+      <div>
+        <Button variant="outline">ورود با اکانت گوگل</Button>
+      </div>
     </div>
   );
 }

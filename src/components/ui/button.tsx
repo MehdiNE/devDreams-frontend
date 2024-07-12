@@ -1,8 +1,11 @@
+"use client";
+
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import useRipple from "@/hooks/useRipple";
 
 const buttonVariants = cva(
   "inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -42,9 +45,12 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const createRipple = useRipple();
+
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
+        onPointerDown={createRipple}
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
