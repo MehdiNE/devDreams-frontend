@@ -1,10 +1,10 @@
-import Auth from "@/features/auth/Auth";
 import React from "react";
+import LoginForm from "@/features/auth/components/LoginForm";
 
 function page() {
   return (
     <div>
-      <Auth />
+      <LoginForm />
     </div>
   );
 }

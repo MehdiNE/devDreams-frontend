@@ -69,7 +69,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={cn(
               inputVariants({
-                variant: errorMessage ? "error" : variant,
+                variant:
+                  errorMessage || props?.["aria-invalid"] ? "error" : variant,
                 className,
               }),
             )}
