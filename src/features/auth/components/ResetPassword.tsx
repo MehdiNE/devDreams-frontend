@@ -1,6 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { resetPasswordAction } from "../actions/userAction";
 import {
   Form,
   FormControl,
@@ -10,64 +15,49 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import React, { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { signupUserAction } from "../actions/userAction";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
+interface IProps {
+  token: string;
+}
+
 const formSchema = z.object({
-  email: z.string().email({
-    message: "ایمیل خود را به درستی وارد کنید",
-  }),
   password: z.string().min(1, {
     message: "رمز عبور خود را وارد کنید",
-  }),
-  username: z.string().min(1, {
-    message: "نام کاربری را وارد کنید",
   }),
   confirmPassword: z.string().min(1, {
     message: "تکرار رمز عبور را وارد کنید",
   }),
 });
 
-export type SignupFormData = z.infer<typeof formSchema>;
+export type ResetPasswordFormData = z.infer<typeof formSchema>;
 
-function SignupForm() {
+function ResetPassword({ token }: IProps) {
   const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
 
   // 1. Define your form.
-  const form = useForm<SignupFormData>({
+  const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
       password: "",
-      username: "",
       confirmPassword: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: SignupFormData) {
+  function onSubmit(values: ResetPasswordFormData) {
     startTransition(async () => {
-      const res = await signupUserAction(values);
+      const res = await resetPasswordAction(values, token);
+      console.log("🚀 ~ startTransition ~ res:", res);
       if (res?.status !== "success") {
         toast.error(res?.message);
       }
 
       if (res?.errors) {
         res?.errors?.forEach((err) => {
-          if (err.path === "username")
-            form.setError("username", { message: err.msg });
-
-          if (err.path === "email")
-            form.setError("email", { message: err.msg });
-
           if (err.path === "password")
             form.setError("password", { message: err.msg });
 
@@ -88,49 +78,12 @@ function SignupForm() {
       <div className="mb-10 font-medium">
         <h2>خوش اومدی</h2>
         <div className="flex gap-1 text-sm">
-          <p>برای ورود فرم زیر رو پر کن.</p>
-          <p>اکانت داری؟</p>
-          <Link
-            href="/login"
-            className="cursor-pointer font-medium text-blue-500"
-          >
-            ورود
-          </Link>
+          <p>برای بازیابی رمز عبور فرم زیر رو پر کن.</p>
         </div>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>نام کاربری</FormLabel>
-                <FormControl>
-                  <Input placeholder="نام کاربری را وارد کنید" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ایمیل</FormLabel>
-                <FormControl>
-                  <Input placeholder="ایمیل خود را وارد کنید" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="password"
@@ -162,7 +115,7 @@ function SignupForm() {
           />
 
           <Button type="submit" size="lg">
-            {isPending ? "Loading..." : "ثبت نام"}
+            {isPending ? "Loading..." : "تایید"}
           </Button>
         </form>
       </Form>
@@ -170,4 +123,4 @@ function SignupForm() {
   );
 }
 
-export default SignupForm;
+export default ResetPassword;

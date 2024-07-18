@@ -4,7 +4,7 @@ import React, { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { loginUserAction } from "../actions/loginUserAction";
+import { loginUserAction } from "../actions/userAction";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,13 +28,13 @@ const formSchema = z.object({
   }),
 });
 
-export type FormData = z.infer<typeof formSchema>;
+export type LoginFormData = z.infer<typeof formSchema>;
 
 function LoginForm() {
   const [isPending, startTransition] = useTransition();
 
   // 1. Define your form.
-  const form = useForm<FormData>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -43,12 +43,25 @@ function LoginForm() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: LoginFormData) {
     startTransition(async () => {
       const res = await loginUserAction(values);
       if (res?.status !== "success") {
-        console.log("object");
         toast.error(res?.message);
+      }
+
+      if (res?.errors) {
+        res?.errors?.forEach((err) => {
+          if (err.path === "email")
+            form.setError("email", { message: err.msg });
+
+          if (err.path === "password")
+            form.setError("password", { message: err.msg });
+        });
+      }
+
+      if (res?.status === "success") {
+        toast.success(res?.message);
       }
     });
   }
@@ -58,7 +71,7 @@ function LoginForm() {
       <div className="mb-10 font-medium">
         <h2>خوش اومدی</h2>
         <div className="flex gap-1 text-sm">
-          <p className="">برای ورود فرم زیر رو پر کن.</p>
+          <p>برای ورود فرم زیر رو پر کن.</p>
           <p>اکانت نداری؟</p>
           <Link
             href="/signup"

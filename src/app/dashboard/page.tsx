@@ -1,5 +1,5 @@
+import { logoutAction } from "@/features/auth/actions/userAction";
 import React from "react";
-import { logoutAction } from "@/features/auth/actions/loginUserAction";
 
 function page() {
   return (
