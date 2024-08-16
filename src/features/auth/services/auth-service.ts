@@ -8,7 +8,7 @@ import { ResetPasswordFormData } from "../components/ResetPassword";
 export async function loginUserService(userData: LoginFormData) {
   try {
     const response = await api.post(
-      "/users/login",
+      "/auth/login",
       {
         email: userData?.email,
         password: userData?.password,
@@ -31,7 +31,7 @@ export async function loginUserService(userData: LoginFormData) {
 export async function signupUserService(userData: SignupFormData) {
   try {
     const response = await api.post(
-      "/users/signup",
+      "/auth/signup",
       {
         email: userData?.email,
         username: userData?.username,
@@ -55,7 +55,7 @@ export async function signupUserService(userData: SignupFormData) {
 export async function forgotPasswordService(userData: ForgotPasswordFormData) {
   try {
     const response = await api.post(
-      "/users/forgotPassword",
+      "/auth/forgotPassword",
       {
         email: userData?.email,
       },
@@ -79,7 +79,7 @@ export async function resetPasswordService(
 ) {
   try {
     const response = await api.patch(
-      `/users/resetPassword/${token}`,
+      `/auth/resetPassword/${token}`,
       {
         password: userData?.password,
         confirmPassword: userData?.confirmPassword,

@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET!;
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("jwt")?.value;
+  const token = request.cookies.get("accessToken")?.value;
 
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));

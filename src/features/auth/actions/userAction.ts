@@ -1,13 +1,13 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import {
   forgotPasswordService,
   loginUserService,
   resetPasswordService,
   signupUserService,
 } from "../services/auth-service";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { LoginFormData } from "../components/LoginForm";
 import { SignupFormData } from "../components/SignupForm";
 import { ForgotPasswordFormData } from "../components/ForgotPassword";
@@ -26,6 +26,17 @@ interface ErrorsType {
   path: string;
 }
 
+function setCookieHandler({
+  accessToken,
+  refreshToken,
+}: {
+  accessToken: string;
+  refreshToken: string;
+}) {
+  cookies().set("accessToken", accessToken, config);
+  cookies().set("refreshToken", refreshToken, config);
+}
+
 export async function loginUserAction(formData: LoginFormData) {
   try {
     const responseData = await loginUserService(formData);
@@ -39,9 +50,13 @@ export async function loginUserAction(formData: LoginFormData) {
     }
 
     if (responseData?.data.token) {
-      cookies().set("jwt", responseData.data.token, config);
-      redirect("/dashboard");
+      setCookieHandler({
+        accessToken: responseData.data.token.accessToken,
+        refreshToken: responseData.data.token.refreshToken,
+      });
     }
+
+    return responseData;
   } catch (error) {
     return {
       status: "error",
@@ -63,7 +78,10 @@ export async function signupUserAction(formData: SignupFormData) {
     }
 
     if (responseData?.data.token) {
-      cookies().set("jwt", responseData.data.token, config);
+      setCookieHandler({
+        accessToken: responseData.data.token.accessToken,
+        refreshToken: responseData.data.token.refreshToken,
+      });
       return {
         status: responseData?.status,
         message: responseData?.message,
@@ -107,7 +125,6 @@ export async function resetPasswordAction(
 ) {
   try {
     const responseData = await resetPasswordService(formData, token);
-    console.log("🚀 ~ responseData:", responseData);
 
     if (responseData?.response) {
       return {
@@ -118,7 +135,10 @@ export async function resetPasswordAction(
     }
 
     if (responseData?.data.token) {
-      cookies().set("jwt", responseData.data.token, config);
+      setCookieHandler({
+        accessToken: responseData.data.token.accessToken,
+        refreshToken: responseData.data.token.refreshToken,
+      });
       return {
         status: responseData?.status,
         message: responseData?.message,
@@ -133,6 +153,7 @@ export async function resetPasswordAction(
 }
 
 export async function logoutAction() {
-  cookies().set("jwt", "", { ...config, maxAge: 0 });
+  cookies().set("accessToken", "", { ...config, maxAge: 0 });
+  cookies().set("refreshToken", "", { ...config, maxAge: 0 });
   redirect("/");
 }

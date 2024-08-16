@@ -49,12 +49,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const Comp = asChild ? Slot : "button";
     return (
-      <Comp
-        onPointerDown={createRipple}
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <div className="w-full">
+        <Comp
+          onPointerDown={createRipple}
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          {...props}
+        />
+      </div>
     );
   },
 );

@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa6";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -46,12 +48,14 @@ function LoginForm() {
   function onSubmit(values: LoginFormData) {
     startTransition(async () => {
       const res = await loginUserAction(values);
+      console.log("🚀 ~ startTransition ~ res:", res);
       if (res?.status !== "success") {
+        console.log(res);
         toast.error(res?.message);
       }
 
       if (res?.errors) {
-        res?.errors?.forEach((err) => {
+        res?.errors?.forEach((err: { path: string; msg: any }) => {
           if (err.path === "email")
             form.setError("email", { message: err.msg });
 
@@ -83,7 +87,10 @@ function LoginForm() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-5"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -99,7 +106,14 @@ function LoginForm() {
             )}
           />
 
-          <div>
+          <div className="relative">
+            <Link
+              href="/forgotpassword"
+              className="absolute left-1 top-2 block cursor-pointer text-left text-xs font-medium text-blue-500"
+            >
+              فراموشی رمز عبور
+            </Link>
+
             <FormField
               control={form.control}
               name="password"
@@ -114,13 +128,6 @@ function LoginForm() {
                 </FormItem>
               )}
             />
-
-            <Link
-              href="/forgotpassword"
-              className="mt-1 block cursor-pointer text-left text-xs font-medium text-blue-500"
-            >
-              فراموشی رمز عبور
-            </Link>
           </div>
 
           <Button type="submit" size="lg">
@@ -129,14 +136,21 @@ function LoginForm() {
         </form>
       </Form>
 
-      <div className="my-4 -mr-1 flex items-center justify-center gap-3 overflow-clip">
+      <div className="my-5 -mr-1 flex items-center justify-center gap-3 overflow-clip">
         <Separator />
-        <span className="text-sm font-medium">یا</span>
+        <span className="text-sm font-medium opacity-60">OR</span>
         <Separator />
       </div>
 
-      <div>
-        <Button variant="outline">ورود با اکانت گوگل</Button>
+      <div className="flex flex-col items-center justify-center gap-3">
+        <a href="http://127.0.0.1:5000/api/v1/auth/google" className="w-full">
+          <Button variant="outline" size="lg">
+            Sign in with Google <FcGoogle className="mr-2 text-lg" />
+          </Button>
+        </a>
+        <Button variant="outline" size="lg">
+          Sign in with Github <FaGithub className="mr-2 text-base" />
+        </Button>
       </div>
     </div>
   );

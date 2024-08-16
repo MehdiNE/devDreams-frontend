@@ -5,7 +5,7 @@ import { jwtVerify } from "jose";
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET!;
 
 export async function GET() {
-  const token = cookies().get("jwt")?.value;
+  const token = cookies().get("accessToken")?.value;
 
   if (!token) {
     return NextResponse.json({ isAuthenticated1: false }, { status: 401 });
